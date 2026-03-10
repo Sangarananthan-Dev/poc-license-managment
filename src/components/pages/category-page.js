@@ -13,12 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { formatCurrency, formatNumber } from "@/lib/dashboard-utils";
 import {
-  formatCurrency,
-  formatNumber,
-  getHealthTone,
-  getUtilizationRate,
-} from "@/lib/dashboard-utils";
+  getModelHealth,
+  getModelUtilization,
+  licenseModelMeta,
+} from "@/lib/license-models";
 
 export function CategoryPage({ categoryId }) {
   const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
@@ -99,14 +99,11 @@ export function CategoryPage({ categoryId }) {
               </thead>
               <tbody>
                 {category.subcategories.map((subcategory) => {
-                  const utilization = getUtilizationRate(
-                    subcategory.activeUsers,
-                    subcategory.purchased,
-                  );
-                  const health = getHealthTone(
-                    subcategory.deniedAttempts,
-                    utilization,
-                  );
+                  const modelUtilization = getModelUtilization(subcategory);
+                  const health = getModelHealth(subcategory);
+                  const modelLabel =
+                    licenseModelMeta[subcategory.licenseModel]?.label ||
+                    subcategory.name;
 
                   return (
                     <tr
@@ -118,7 +115,7 @@ export function CategoryPage({ categoryId }) {
                           href={`/categories/${category.id}/${subcategory.id}`}
                           className="font-medium text-blue-700 hover:underline"
                         >
-                          {subcategory.name}
+                          {modelLabel}
                         </Link>
                       </td>
                       <td className="p-3 text-slate-700">
@@ -129,9 +126,9 @@ export function CategoryPage({ categoryId }) {
                       </td>
                       <td className="p-3">
                         <div className="w-36 space-y-1">
-                          <Progress value={utilization} />
+                          <Progress value={modelUtilization} />
                           <p className="text-xs text-slate-600">
-                            {utilization}%
+                            {modelUtilization}%
                           </p>
                         </div>
                       </td>
@@ -139,7 +136,7 @@ export function CategoryPage({ categoryId }) {
                         {formatNumber(subcategory.deniedAttempts)}
                       </td>
                       <td className="p-3">
-                        <Badge tone={health.tone}>{health.label}</Badge>
+                        <Badge tone={health.tone}>{health.title}</Badge>
                       </td>
                     </tr>
                   );

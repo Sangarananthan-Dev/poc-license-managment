@@ -11,13 +11,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { slugify } from "@/lib/dashboard-utils";
 import {
-  formatCurrency,
-  formatNumber,
-  getHealthTone,
-  getUtilizationRate,
-  slugify,
-} from "@/lib/dashboard-utils";
+  formatStatValue,
+  getModelHealth,
+  getModelStats,
+  licenseModelMeta,
+} from "@/lib/license-models";
 
 function getHash(value) {
   let hash = 0;
@@ -100,41 +100,48 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
   const softwareName = softwareNames[softwareIndex];
   const weights = softwareNames.map((name) => (getHash(name) % 5) + 2);
 
-  const purchased = distribute(subcategory.purchased, weights, softwareIndex);
-  const installedEndpoints = distribute(
-    subcategory.installedEndpoints,
-    weights,
-    softwareIndex,
-  );
-  const activeUsers = distribute(
-    subcategory.activeUsers,
-    weights,
-    softwareIndex,
-  );
-  const deniedAttempts = Math.max(
-    0,
-    distribute(subcategory.deniedAttempts, weights, softwareIndex),
-  );
-  const monthlyCost = distribute(
-    subcategory.monthlyCostInr,
-    weights,
-    softwareIndex,
-  );
+  const softwareView = {
+    ...subcategory,
+    purchased: distribute(subcategory.purchased, weights, softwareIndex),
+    installedEndpoints: distribute(
+      subcategory.installedEndpoints,
+      weights,
+      softwareIndex,
+    ),
+    activeUsers: distribute(subcategory.activeUsers, weights, softwareIndex),
+    peakConcurrent: distribute(
+      subcategory.peakConcurrent,
+      weights,
+      softwareIndex,
+    ),
+    deniedAttempts: Math.max(
+      0,
+      distribute(subcategory.deniedAttempts, weights, softwareIndex),
+    ),
+    monthlyCostInr: distribute(
+      subcategory.monthlyCostInr,
+      weights,
+      softwareIndex,
+    ),
+  };
 
-  const utilization = getUtilizationRate(activeUsers, purchased);
-  const health = getHealthTone(deniedAttempts, utilization);
+  const stats = getModelStats(softwareView);
+  const health = getModelHealth(softwareView);
+  const modelLabel =
+    licenseModelMeta[subcategory.licenseModel]?.label || subcategory.name;
+
   const tickSeed =
     lastUpdatedAt.getSeconds() + softwareIndex + getHash(softwareName);
   const endpointRows = getSoftwareEndpointRows(
     softwareName,
-    installedEndpoints,
+    softwareView.installedEndpoints,
     tickSeed,
   );
 
   return (
     <AppShell
       title={`${softwareName} Detail`}
-      subtitle={`${category.name} / ${subcategory.name} software-level simulation`}
+      subtitle={`${category.name} / ${modelLabel} software-level simulation`}
       status={
         <Badge tone="info">
           Live simulation updates every{" "}
@@ -144,27 +151,34 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
       }
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <StatCard label="Purchased" value={formatNumber(purchased)} />
-        <StatCard label="Installed" value={formatNumber(installedEndpoints)} />
-        <StatCard label="Active" value={formatNumber(activeUsers)} />
-        <StatCard label="Denied" value={formatNumber(deniedAttempts)} />
-        <StatCard label="Monthly Cost" value={formatCurrency(monthlyCost)} />
+        {stats.map((item) => (
+          <StatCard
+            key={item.label}
+            label={item.label}
+            value={formatStatValue(item)}
+          />
+        ))}
       </section>
 
       <Card>
         <CardHeader>
           <CardTitle>Utilization and Health</CardTitle>
-          <CardDescription>Software-level live behavior</CardDescription>
+          <CardDescription>
+            {licenseModelMeta[subcategory.licenseModel]?.summary}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm text-slate-700">
               <span>Utilization</span>
-              <span>{utilization}%</span>
+              <span>{health.utilization}%</span>
             </div>
-            <Progress value={utilization} />
+            <Progress value={health.utilization} />
           </div>
-          <Badge tone={health.tone}>{health.label}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge tone={health.tone}>{health.title}</Badge>
+            <p className="text-xs text-slate-500">{health.detail}</p>
+          </div>
         </CardContent>
       </Card>
 

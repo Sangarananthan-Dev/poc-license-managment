@@ -39,52 +39,34 @@ export function NavigationPanel() {
           All Categories
         </NavLink>
 
-        {categories.map((category) => {
-          const isCategoryActive = pathname.startsWith(
-            `/categories/${category.id}`,
-          );
+        <div className="space-y-2">
+          <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.09rem] text-slate-500">
+            Vendor Categories
+          </p>
+          {categories.map((category) => {
+            const isCategoryActive = pathname.startsWith(
+              `/categories/${category.id}`,
+            );
 
-          return (
-            <div
-              key={category.id}
-              className="rounded-lg border border-slate-100 p-2"
-            >
+            return (
               <Link
+                key={category.id}
                 href={`/categories/${category.id}`}
                 className={cn(
-                  "block rounded-md px-2 py-1 text-sm font-semibold",
+                  "flex items-center justify-between rounded-md border px-3 py-2 text-sm",
                   isCategoryActive
-                    ? "bg-blue-50 text-blue-800"
-                    : "text-slate-800 hover:bg-slate-50",
+                    ? "border-blue-200 bg-blue-50 text-blue-800"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                 )}
               >
-                {category.name}
+                <span className="font-medium">{category.name}</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  {category.subcategories.length} types
+                </span>
               </Link>
-
-              <div className="mt-1 space-y-1">
-                {category.subcategories.map((subcategory) => {
-                  const href = `/categories/${category.id}/${subcategory.id}`;
-                  const isActive = pathname.startsWith(href);
-
-                  return (
-                    <Link
-                      key={`${category.id}-${subcategory.id}`}
-                      href={href}
-                      className={cn(
-                        "block rounded-md px-2 py-1 text-xs",
-                        isActive
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-slate-600 hover:bg-slate-50",
-                      )}
-                    >
-                      {subcategory.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </aside>
   );

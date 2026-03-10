@@ -14,12 +14,12 @@ import {
 } from "@/components/ui/card";
 import { BarListChart, StackedBar } from "@/components/ui/chart";
 import { Progress } from "@/components/ui/progress";
+import { formatCurrency, formatNumber } from "@/lib/dashboard-utils";
 import {
-  formatCurrency,
-  formatNumber,
-  getHealthTone,
-  getUtilizationRate,
-} from "@/lib/dashboard-utils";
+  getModelHealth,
+  getModelUtilization,
+  licenseModelMeta,
+} from "@/lib/license-models";
 
 export function OverviewPage() {
   const {
@@ -51,7 +51,7 @@ export function OverviewPage() {
 
     return {
       label: category.name,
-      value: getUtilizationRate(active, purchased),
+      value: purchased > 0 ? Math.round((active / purchased) * 100) : 0,
       color: "#3b82f6",
     };
   });
@@ -62,14 +62,10 @@ export function OverviewPage() {
       subtitle="Live  simulation of engineering license behavior across vendors, categories, and software assets."
       status={
         <Badge tone="info">
-          Live simulation enabled | Last updated:{" "}
+          Live simulation updates every{" "}
+          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
           {lastUpdatedAt.toLocaleTimeString("en-IN")}
         </Badge>
-        // <Badge tone="info">
-        //   Live simulation updates every{" "}
-        //   {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-        //   {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        // </Badge>
       }
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -109,7 +105,7 @@ export function OverviewPage() {
                 <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                   <tr>
                     <th className="rounded-l-lg p-3">Category</th>
-                    <th className="p-3">Subcategory</th>
+                    <th className="p-3">License Type</th>
                     <th className="p-3">Purchased</th>
                     <th className="p-3">Active</th>
                     <th className="p-3">Utilization</th>
@@ -118,14 +114,10 @@ export function OverviewPage() {
                 </thead>
                 <tbody>
                   {rows.map((row) => {
-                    const utilization = getUtilizationRate(
-                      row.activeUsers,
-                      row.purchased,
-                    );
-                    const health = getHealthTone(
-                      row.deniedAttempts,
-                      utilization,
-                    );
+                    const utilization = getModelUtilization(row);
+                    const health = getModelHealth(row);
+                    const modelLabel =
+                      licenseModelMeta[row.licenseModel]?.label || row.name;
 
                     return (
                       <tr
@@ -145,7 +137,7 @@ export function OverviewPage() {
                             href={`/categories/${row.categoryId}/${row.id}`}
                             className="text-slate-700 hover:text-blue-700 hover:underline"
                           >
-                            {row.name}
+                            {modelLabel}
                           </Link>
                         </td>
                         <td className="p-3 text-slate-700">
@@ -163,7 +155,7 @@ export function OverviewPage() {
                           </div>
                         </td>
                         <td className="p-3">
-                          <Badge tone={health.tone}>{health.label}</Badge>
+                          <Badge tone={health.tone}>{health.title}</Badge>
                         </td>
                       </tr>
                     );

@@ -13,13 +13,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { slugify } from "@/lib/dashboard-utils";
 import {
-  formatCurrency,
-  formatNumber,
-  getHealthTone,
-  getUtilizationRate,
-  slugify,
-} from "@/lib/dashboard-utils";
+  formatStatValue,
+  getModelHealth,
+  getModelStats,
+  licenseModelMeta,
+} from "@/lib/license-models";
 
 export function SubcategoryPage({ categoryId, subcategoryId }) {
   const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
@@ -46,16 +46,15 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
     );
   }
 
-  const utilization = getUtilizationRate(
-    subcategory.activeUsers,
-    subcategory.purchased,
-  );
-  const health = getHealthTone(subcategory.deniedAttempts, utilization);
+  const stats = getModelStats(subcategory);
+  const health = getModelHealth(subcategory);
+  const modelLabel =
+    licenseModelMeta[subcategory.licenseModel]?.label || subcategory.name;
 
   return (
     <AppShell
-      title={`${category.name} / ${subcategory.name}`}
-      subtitle="Subcategory analytics with software-level drill-down"
+      title={`${category.name} / ${modelLabel}`}
+      subtitle="Type-specific analytics with software-level drill-down"
       status={
         <Badge tone="info">
           Live simulation updates every{" "}
@@ -65,58 +64,43 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
       }
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <StatCard
-          label="Purchased"
-          value={formatNumber(subcategory.purchased)}
-        />
-        <StatCard
-          label="Installed Endpoints"
-          value={formatNumber(subcategory.installedEndpoints)}
-        />
-        <StatCard
-          label="Active Users"
-          value={formatNumber(subcategory.activeUsers)}
-        />
-        <StatCard
-          label="Peak Concurrent"
-          value={formatNumber(subcategory.peakConcurrent)}
-        />
-        <StatCard
-          label="Monthly Cost"
-          value={formatCurrency(subcategory.monthlyCostInr)}
-        />
+        {stats.map((item) => (
+          <StatCard
+            key={item.label}
+            label={item.label}
+            value={formatStatValue(item)}
+          />
+        ))}
       </section>
 
       <Card>
         <CardHeader>
           <CardTitle>License Health</CardTitle>
           <CardDescription>
-            Current utilization and denial status
+            {licenseModelMeta[subcategory.licenseModel]?.summary ||
+              "Model-specific health indicators"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm text-slate-700">
               <span>Utilization</span>
-              <span>{utilization}%</span>
+              <span>{health.utilization}%</span>
             </div>
-            <Progress value={utilization} />
+            <Progress value={health.utilization} />
           </div>
           <div className="flex items-center gap-2">
-            <Badge tone={health.tone}>{health.label}</Badge>
-            <p className="text-xs text-slate-500">
-              Denied attempts in this cycle:{" "}
-              {formatNumber(subcategory.deniedAttempts)}
-            </p>
+            <Badge tone={health.tone}>{health.title}</Badge>
+            <p className="text-xs text-slate-500">{health.detail}</p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Software Assets in This Subcategory</CardTitle>
+          <CardTitle>Software Assets in This License Type</CardTitle>
           <CardDescription>
-            Open software level details for endpoint and usage behavior
+            Open software-level details for endpoint and usage behavior
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -133,7 +117,7 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
                     {softwareName}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Simulated metrics available
+                    {modelLabel} metrics available
                   </p>
                   <Link
                     href={`/categories/${category.id}/${subcategory.id}/${softwareSlug}`}

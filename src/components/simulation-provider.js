@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { licenseCategories } from "@/lib/license-data";
 
 const SIMULATION_INTERVAL_MS = 3000;
-const ORGANIZATION_ENDPOINTS = 20640;
+const ORGANIZATION_ENDPOINTS = 12500;
 
 const SimulationContext = createContext(null);
 
@@ -28,6 +28,10 @@ function clamp(value, min, max) {
 }
 
 function getMaxActive(subcategory) {
+  if (subcategory.licenseModel === "named") {
+    return subcategory.installedEndpoints;
+  }
+
   const purchasedCeiling = Math.max(
     1,
     Math.round(subcategory.purchased * 1.15),
@@ -37,12 +41,32 @@ function getMaxActive(subcategory) {
 
 function getUpdatedSubcategory(subcategory) {
   const maxActive = getMaxActive(subcategory);
-  const delta = randomInt(-6, 6);
+  const modelDelta = {
+    concurrent: 7,
+    named: 4,
+    token: 8,
+    node: 3,
+    hybrid: 6,
+  };
+
+  const swing = modelDelta[subcategory.licenseModel] ?? 6;
+  const delta = randomInt(-swing, swing);
   const nextActive = clamp(subcategory.activeUsers + delta, 0, maxActive);
 
   const pressure =
     subcategory.purchased > 0 ? nextActive / subcategory.purchased : 0;
-  const deniedDelta = pressure > 0.9 ? randomInt(0, 3) : -randomInt(0, 2);
+
+  let deniedDelta = 0;
+  if (subcategory.licenseModel === "named") {
+    deniedDelta = randomInt(-1, 0);
+  } else if (subcategory.licenseModel === "node") {
+    deniedDelta = randomInt(-1, 1);
+  } else if (pressure > 0.9) {
+    deniedDelta = randomInt(0, 3);
+  } else {
+    deniedDelta = -randomInt(0, 2);
+  }
+
   const nextDeniedAttempts = clamp(
     subcategory.deniedAttempts + deniedDelta,
     0,
