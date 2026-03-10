@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency, formatNumber } from "@/lib/dashboard-utils";
+import { formatNumber } from "@/lib/dashboard-utils";
 import {
   getModelHealth,
   getModelUtilization,
@@ -53,10 +53,8 @@ export function CategoryPage({ categoryId }) {
     (sum, item) => sum + item.deniedAttempts,
     0,
   );
-  const cost = category.subcategories.reduce(
-    (sum, item) => sum + item.monthlyCostInr,
-    0,
-  );
+  const utilization =
+    purchased > 0 ? Math.round((active / purchased) * 100) : 0;
 
   return (
     <AppShell
@@ -74,7 +72,7 @@ export function CategoryPage({ categoryId }) {
         <SummaryCard label="Purchased" value={formatNumber(purchased)} />
         <SummaryCard label="Active" value={formatNumber(active)} />
         <SummaryCard label="Denied" value={formatNumber(denied)} />
-        <SummaryCard label="Monthly Cost" value={formatCurrency(cost)} />
+        <SummaryCard label="Utilization" value={`${utilization}%`} />
       </section>
 
       <Card>

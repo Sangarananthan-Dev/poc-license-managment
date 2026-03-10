@@ -38,6 +38,9 @@ export function NavigationPanel() {
         <NavLink href="/categories" active={pathname === "/categories"}>
           All Categories
         </NavLink>
+        <NavLink href="/endpoints" active={pathname.startsWith("/endpoints")}>
+          Endpoints
+        </NavLink>
 
         <div className="space-y-2">
           <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.09rem] text-slate-500">

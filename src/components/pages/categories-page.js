@@ -12,11 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  formatCurrency,
-  formatNumber,
-  getUtilizationRate,
-} from "@/lib/dashboard-utils";
+import { formatNumber, getUtilizationRate } from "@/lib/dashboard-utils";
 
 export function CategoriesPage() {
   const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
@@ -43,8 +39,8 @@ export function CategoriesPage() {
             (sum, item) => sum + item.activeUsers,
             0,
           );
-          const cost = category.subcategories.reduce(
-            (sum, item) => sum + item.monthlyCostInr,
+          const denied = category.subcategories.reduce(
+            (sum, item) => sum + item.deniedAttempts,
             0,
           );
 
@@ -79,8 +75,8 @@ export function CategoriesPage() {
                     </p>
                   </div>
                   <div className="rounded-lg bg-slate-50 p-2">
-                    <p className="text-xs text-slate-500">Monthly Cost</p>
-                    <p className="font-semibold">{formatCurrency(cost)}</p>
+                    <p className="text-xs text-slate-500">Denied Events</p>
+                    <p className="font-semibold">{formatNumber(denied)}</p>
                   </div>
                 </div>
 

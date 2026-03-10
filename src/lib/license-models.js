@@ -1,8 +1,4 @@
-import {
-  formatCurrency,
-  formatNumber,
-  getUtilizationRate,
-} from "@/lib/dashboard-utils";
+import { formatNumber, getUtilizationRate } from "@/lib/dashboard-utils";
 
 export const licenseModelMeta = {
   concurrent: {
@@ -50,7 +46,7 @@ export function getModelStats(subcategory) {
         stat("Installed Endpoints", subcategory.installedEndpoints),
         stat("Active Sessions", subcategory.activeUsers),
         stat("Peak Concurrent", subcategory.peakConcurrent),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
 
@@ -65,7 +61,7 @@ export function getModelStats(subcategory) {
         stat("Users Assigned", subcategory.installedEndpoints),
         stat("MAU (30d)", subcategory.activeUsers),
         stat("Inactive Assigned", inactiveAssigned),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
 
@@ -80,7 +76,7 @@ export function getModelStats(subcategory) {
         stat("Tokens In Use", subcategory.activeUsers),
         stat("Peak Token Burn", subcategory.peakConcurrent),
         stat("Avg Token/Session", Number(avgTokenPerSession.toFixed(1))),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
 
@@ -95,7 +91,7 @@ export function getModelStats(subcategory) {
         stat("Bound Devices", subcategory.installedEndpoints),
         stat("Active Devices", subcategory.activeUsers),
         stat("Non-Compliant Nodes", nonCompliantNodes),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
 
@@ -108,7 +104,7 @@ export function getModelStats(subcategory) {
         stat("Fixed Seats", fixedSeats),
         stat("Floating Pool", floatingPool),
         stat("Burst Active", subcategory.activeUsers),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
 
@@ -118,7 +114,7 @@ export function getModelStats(subcategory) {
         stat("Installed", subcategory.installedEndpoints),
         stat("Active", subcategory.activeUsers),
         stat("Peak", subcategory.peakConcurrent),
-        stat("Monthly Cost", subcategory.monthlyCostInr, "currency"),
+        stat("Denied Attempts", subcategory.deniedAttempts),
       ];
     }
   }
@@ -242,9 +238,5 @@ export function getModelHealth(subcategory) {
 }
 
 export function formatStatValue(item) {
-  if (item.kind === "currency") {
-    return formatCurrency(item.value);
-  }
-
   return formatNumber(item.value);
 }

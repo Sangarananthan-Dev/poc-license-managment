@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { BarListChart, StackedBar } from "@/components/ui/chart";
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency, formatNumber } from "@/lib/dashboard-utils";
+import { formatNumber } from "@/lib/dashboard-utils";
 import {
   getModelHealth,
   getModelUtilization,
@@ -30,10 +30,6 @@ export function OverviewPage() {
     simulationIntervalMs,
   } = useSimulation();
 
-  const totalMonthlyCost = rows.reduce(
-    (sum, row) => sum + row.monthlyCostInr,
-    0,
-  );
   const totalPurchased = rows.reduce((sum, row) => sum + row.purchased, 0);
   const totalActive = rows.reduce((sum, row) => sum + row.activeUsers, 0);
   const totalDenied = rows.reduce((sum, row) => sum + row.deniedAttempts, 0);
@@ -84,9 +80,9 @@ export function OverviewPage() {
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Monthly ENG License Spend"
-          value={formatCurrency(totalMonthlyCost)}
-          subtext="Across tracked categories"
+          label="Endpoints With ENG Software"
+          value={formatNumber(endpointHealth.withEngSoftware)}
+          subtext="Current device footprint"
         />
         <MetricCard
           label="Purchased Entitlements"
