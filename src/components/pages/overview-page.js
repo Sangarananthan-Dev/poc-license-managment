@@ -26,7 +26,6 @@ export function OverviewPage() {
     categories,
     rows,
     endpointHealth,
-    recommendations,
     lastUpdatedAt,
     simulationIntervalMs,
   } = useSimulation();
@@ -55,6 +54,21 @@ export function OverviewPage() {
       color: "#3b82f6",
     };
   });
+
+  const vendorInstallations = categories
+    .map((category) => {
+      const installedEndpoints = category.subcategories.reduce(
+        (sum, subcategory) => sum + subcategory.installedEndpoints,
+        0,
+      );
+
+      return {
+        id: category.id,
+        installedEndpoints,
+        name: category.name,
+      };
+    })
+    .sort((a, b) => b.installedEndpoints - a.installedEndpoints);
 
   return (
     <AppShell
@@ -89,6 +103,87 @@ export function OverviewPage() {
           value={formatNumber(totalDenied)}
           subtext="Potential capacity bottlenecks"
         />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-5">
+        <Card className="xl:col-span-3">
+          <CardHeader>
+            <CardTitle>Endpoint Coverage and Activity</CardTitle>
+            <CardDescription>
+              Live endpoint behavior in the current simulation cycle
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div>
+              <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
+                <span>Endpoints with ENG software</span>
+                <span>
+                  {formatNumber(endpointHealth.withEngSoftware)} /{" "}
+                  {formatNumber(endpointHealth.total)}
+                </span>
+              </div>
+              <Progress
+                value={Math.round(
+                  (endpointHealth.withEngSoftware / endpointHealth.total) * 100,
+                )}
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
+                <span>Active endpoints (30 days)</span>
+                <span>{formatNumber(endpointHealth.activeLast30Days)}</span>
+              </div>
+              <StackedBar
+                segments={[
+                  {
+                    label: "Active",
+                    value: endpointHealth.activeLast30Days,
+                    color: "#16a34a",
+                  },
+                  {
+                    label: "Idle",
+                    value: endpointHealth.idleOver45Days,
+                    color: "#f59e0b",
+                  },
+                ]}
+              />
+              <p className="mt-2 text-xs text-slate-500">
+                Idle endpoints over 45 days:{" "}
+                {formatNumber(endpointHealth.idleOver45Days)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Highest Installed Vendors</CardTitle>
+            <CardDescription>
+              Vendors ranked by engineering software footprint
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {vendorInstallations.map((vendor, index) => (
+              <article
+                key={vendor.id}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+              >
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <p className="text-sm font-medium text-slate-900">
+                    {index + 1}. {vendor.name}
+                  </p>
+                  <Badge tone={index === 0 ? "info" : "neutral"}>
+                    Installed
+                  </Badge>
+                </div>
+                <p className="text-xs text-slate-600">
+                  {formatNumber(vendor.installedEndpoints)} endpoints
+                </p>
+              </article>
+            ))}
+          </CardContent>
+        </Card>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-5">
@@ -175,83 +270,6 @@ export function OverviewPage() {
           </CardHeader>
           <CardContent>
             <BarListChart data={categoryUtilization} />
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
-          <CardHeader>
-            <CardTitle>Endpoint Coverage and Activity</CardTitle>
-            <CardDescription>
-              Live endpoint behavior in the current simulation cycle
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div>
-              <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
-                <span>Endpoints with ENG software</span>
-                <span>
-                  {formatNumber(endpointHealth.withEngSoftware)} /{" "}
-                  {formatNumber(endpointHealth.total)}
-                </span>
-              </div>
-              <Progress
-                value={Math.round(
-                  (endpointHealth.withEngSoftware / endpointHealth.total) * 100,
-                )}
-              />
-            </div>
-
-            <div>
-              <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
-                <span>Active endpoints (30 days)</span>
-                <span>{formatNumber(endpointHealth.activeLast30Days)}</span>
-              </div>
-              <StackedBar
-                segments={[
-                  {
-                    label: "Active",
-                    value: endpointHealth.activeLast30Days,
-                    color: "#16a34a",
-                  },
-                  {
-                    label: "Idle",
-                    value: endpointHealth.idleOver45Days,
-                    color: "#f59e0b",
-                  },
-                ]}
-              />
-              <p className="mt-2 text-xs text-slate-500">
-                Idle endpoints over 45 days:{" "}
-                {formatNumber(endpointHealth.idleOver45Days)}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>Optimization Queue</CardTitle>
-            <CardDescription>
-              Generated from live simulated utilization conditions
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recommendations.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-lg border border-slate-200 bg-slate-50 p-3"
-              >
-                <div className="mb-2 flex items-start justify-between gap-3">
-                  <p className="text-sm font-medium text-slate-900">
-                    {item.title}
-                  </p>
-                  <Badge tone={item.severity}>Open</Badge>
-                </div>
-                <p className="text-xs text-slate-600">{item.impact}</p>
-              </article>
-            ))}
           </CardContent>
         </Card>
       </section>
