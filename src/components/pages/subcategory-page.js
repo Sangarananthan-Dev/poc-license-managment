@@ -105,19 +105,22 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {subcategory.software.map((softwareName) => {
-              const softwareSlug = slugify(softwareName);
+            {subcategory.software.map((software) => {
+              const softwareSlug = slugify(software.name);
 
               return (
                 <article
-                  key={softwareName}
+                  key={software.name}
                   className="rounded-lg border border-slate-200 bg-slate-50 p-3"
                 >
                   <p className="text-sm font-medium text-slate-900">
-                    {softwareName}
+                    {software.name}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
                     {modelLabel} metrics available
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Expires: {software.expiryDate}
                   </p>
                   <Link
                     href={`/categories/${category.id}/${subcategory.id}/${softwareSlug}`}

@@ -1,3 +1,13 @@
+function softwareItem(
+  name,
+  purchaseDate,
+  expiryDate,
+  contractId,
+  renewalOwner,
+) {
+  return { contractId, expiryDate, name, purchaseDate, renewalOwner };
+}
+
 export const licenseCategories = [
   {
     id: "autodesk",
@@ -14,7 +24,22 @@ export const licenseCategories = [
         peakConcurrent: 31,
         deniedAttempts: 14,
         monthlyCostInr: 1250000,
-        software: ["AutoCAD", "Civil 3D"],
+        software: [
+          softwareItem(
+            "AutoCAD",
+            "2025-05-15",
+            "2026-05-14",
+            "ATD-CAD-001",
+            "Meena R",
+          ),
+          softwareItem(
+            "Civil 3D",
+            "2025-05-15",
+            "2026-05-14",
+            "ATD-CAD-001",
+            "Meena R",
+          ),
+        ],
       },
       {
         id: "named-user-saas",
@@ -26,7 +51,22 @@ export const licenseCategories = [
         peakConcurrent: 121,
         deniedAttempts: 0,
         monthlyCostInr: 780000,
-        software: ["Fusion 360", "BIM Collaborate Pro"],
+        software: [
+          softwareItem(
+            "Fusion 360",
+            "2025-07-01",
+            "2026-06-30",
+            "ATD-SAS-014",
+            "Arun K",
+          ),
+          softwareItem(
+            "BIM Collaborate Pro",
+            "2025-07-01",
+            "2026-06-30",
+            "ATD-SAS-014",
+            "Arun K",
+          ),
+        ],
       },
       {
         id: "token-based",
@@ -38,7 +78,22 @@ export const licenseCategories = [
         peakConcurrent: 149,
         deniedAttempts: 2,
         monthlyCostInr: 540000,
-        software: ["Maya", "3ds Max"],
+        software: [
+          softwareItem(
+            "Maya",
+            "2025-09-10",
+            "2026-09-09",
+            "ATD-TKN-023",
+            "Meena R",
+          ),
+          softwareItem(
+            "3ds Max",
+            "2025-09-10",
+            "2026-09-09",
+            "ATD-TKN-023",
+            "Meena R",
+          ),
+        ],
       },
       {
         id: "hybrid",
@@ -50,7 +105,15 @@ export const licenseCategories = [
         peakConcurrent: 81,
         deniedAttempts: 4,
         monthlyCostInr: 355000,
-        software: ["Revit"],
+        software: [
+          softwareItem(
+            "Revit",
+            "2025-03-01",
+            "2026-02-28",
+            "ATD-HBD-044",
+            "Arun K",
+          ),
+        ],
       },
     ],
   },
@@ -69,7 +132,15 @@ export const licenseCategories = [
         peakConcurrent: 67,
         deniedAttempts: 8,
         monthlyCostInr: 610000,
-        software: ["OpenRoads Designer"],
+        software: [
+          softwareItem(
+            "OpenRoads Designer",
+            "2025-08-05",
+            "2026-08-04",
+            "BEN-CON-009",
+            "Shakti V",
+          ),
+        ],
       },
       {
         id: "token-based",
@@ -81,7 +152,22 @@ export const licenseCategories = [
         peakConcurrent: 165,
         deniedAttempts: 3,
         monthlyCostInr: 910000,
-        software: ["MicroStation", "STAAD.Pro"],
+        software: [
+          softwareItem(
+            "MicroStation",
+            "2025-01-20",
+            "2026-01-19",
+            "BEN-TKN-020",
+            "Shakti V",
+          ),
+          softwareItem(
+            "STAAD.Pro",
+            "2025-01-20",
+            "2026-01-19",
+            "BEN-TKN-020",
+            "Shakti V",
+          ),
+        ],
       },
       {
         id: "node-locked",
@@ -93,7 +179,15 @@ export const licenseCategories = [
         peakConcurrent: 43,
         deniedAttempts: 0,
         monthlyCostInr: 215000,
-        software: ["RAM Structural System"],
+        software: [
+          softwareItem(
+            "RAM Structural System",
+            "2025-10-15",
+            "2026-10-14",
+            "BEN-NOD-007",
+            "Shakti V",
+          ),
+        ],
       },
     ],
   },
@@ -112,7 +206,15 @@ export const licenseCategories = [
         peakConcurrent: 50,
         deniedAttempts: 2,
         monthlyCostInr: 420000,
-        software: ["Primavera Unifier"],
+        software: [
+          softwareItem(
+            "Primavera Unifier",
+            "2025-04-01",
+            "2026-03-31",
+            "ORC-CON-003",
+            "Nisha P",
+          ),
+        ],
       },
       {
         id: "named-user-saas",
@@ -124,7 +226,15 @@ export const licenseCategories = [
         peakConcurrent: 174,
         deniedAttempts: 0,
         monthlyCostInr: 690000,
-        software: ["Primavera P6 EPPM"],
+        software: [
+          softwareItem(
+            "Primavera P6 EPPM",
+            "2025-06-18",
+            "2026-06-17",
+            "ORC-NAM-016",
+            "Nisha P",
+          ),
+        ],
       },
       {
         id: "hybrid",
@@ -136,7 +246,15 @@ export const licenseCategories = [
         peakConcurrent: 35,
         deniedAttempts: 1,
         monthlyCostInr: 133000,
-        software: ["Primavera Cloud"],
+        software: [
+          softwareItem(
+            "Primavera Cloud",
+            "2025-11-01",
+            "2026-10-31",
+            "ORC-HYB-005",
+            "Nisha P",
+          ),
+        ],
       },
     ],
   },
@@ -155,7 +273,15 @@ export const licenseCategories = [
         peakConcurrent: 81,
         deniedAttempts: 0,
         monthlyCostInr: 248000,
-        software: ["Trimble Connect"],
+        software: [
+          softwareItem(
+            "Trimble Connect",
+            "2025-02-12",
+            "2026-02-11",
+            "TRM-NAM-010",
+            "Rahul D",
+          ),
+        ],
       },
       {
         id: "token-based",
@@ -167,7 +293,15 @@ export const licenseCategories = [
         peakConcurrent: 151,
         deniedAttempts: 4,
         monthlyCostInr: 414000,
-        software: ["Tekla Structural Designer"],
+        software: [
+          softwareItem(
+            "Tekla Structural Designer",
+            "2025-07-22",
+            "2026-07-21",
+            "TRM-TKN-013",
+            "Rahul D",
+          ),
+        ],
       },
       {
         id: "node-locked",
@@ -179,7 +313,15 @@ export const licenseCategories = [
         peakConcurrent: 46,
         deniedAttempts: 0,
         monthlyCostInr: 176000,
-        software: ["Tekla Tedds"],
+        software: [
+          softwareItem(
+            "Tekla Tedds",
+            "2025-09-30",
+            "2026-09-29",
+            "TRM-NOD-006",
+            "Rahul D",
+          ),
+        ],
       },
       {
         id: "hybrid",
@@ -191,7 +333,15 @@ export const licenseCategories = [
         peakConcurrent: 138,
         deniedAttempts: 5,
         monthlyCostInr: 560000,
-        software: ["Tekla Structures"],
+        software: [
+          softwareItem(
+            "Tekla Structures",
+            "2025-03-25",
+            "2026-03-24",
+            "TRM-HYB-008",
+            "Rahul D",
+          ),
+        ],
       },
     ],
   },
@@ -247,21 +397,21 @@ export function getSoftwareDetails(categoryId, subcategoryId, softwareSlug) {
   }
 
   const { category, subcategory } = result;
-  const softwareName = subcategory.software.find(
-    (name) =>
-      name
+  const software = subcategory.software.find(
+    (item) =>
+      item.name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "") === softwareSlug,
   );
 
-  if (!softwareName) {
+  if (!software) {
     return null;
   }
 
   return {
     category,
     subcategory,
-    softwareName,
+    software,
   };
 }

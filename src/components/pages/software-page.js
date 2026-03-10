@@ -54,6 +54,23 @@ function getSoftwareEndpointRows(softwareName, baseInstalled, tickSeed) {
   });
 }
 
+function getExpiryStatus(expiryDate) {
+  const today = new Date();
+  const expiry = new Date(expiryDate);
+  const diffInMs = expiry.getTime() - today.getTime();
+  const daysLeft = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (daysLeft < 0) {
+    return { daysLeft, label: "Expired", tone: "danger" };
+  }
+
+  if (daysLeft <= 45) {
+    return { daysLeft, label: "Expiring Soon", tone: "warning" };
+  }
+
+  return { daysLeft, label: "Active", tone: "success" };
+}
+
 export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
   const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
 
@@ -77,9 +94,9 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
     );
   }
 
-  const softwareNames = subcategory.software;
-  const softwareIndex = softwareNames.findIndex(
-    (name) => slugify(name) === softwareSlug,
+  const softwareList = subcategory.software;
+  const softwareIndex = softwareList.findIndex(
+    (item) => slugify(item.name) === softwareSlug,
   );
 
   if (softwareIndex === -1) {
@@ -97,8 +114,9 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
     );
   }
 
-  const softwareName = softwareNames[softwareIndex];
-  const weights = softwareNames.map((name) => (getHash(name) % 5) + 2);
+  const software = softwareList[softwareIndex];
+  const softwareName = software.name;
+  const weights = softwareList.map((item) => (getHash(item.name) % 5) + 2);
 
   const softwareView = {
     ...subcategory,
@@ -129,6 +147,7 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
   const health = getModelHealth(softwareView);
   const modelLabel =
     licenseModelMeta[subcategory.licenseModel]?.label || subcategory.name;
+  const expiryStatus = getExpiryStatus(software.expiryDate);
 
   const tickSeed =
     lastUpdatedAt.getSeconds() + softwareIndex + getHash(softwareName);
@@ -159,6 +178,31 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
           />
         ))}
       </section>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Contract and Renewal</CardTitle>
+          <CardDescription>
+            Software-level procurement and renewal metadata
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <MiniStat label="Purchase Date" value={software.purchaseDate} />
+            <MiniStat label="Expiry Date" value={software.expiryDate} />
+            <MiniStat label="Contract ID" value={software.contractId} />
+            <MiniStat label="Renewal Owner" value={software.renewalOwner} />
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge tone={expiryStatus.tone}>{expiryStatus.label}</Badge>
+            <p className="text-xs text-slate-500">
+              {expiryStatus.daysLeft >= 0
+                ? `${expiryStatus.daysLeft} days remaining`
+                : `${Math.abs(expiryStatus.daysLeft)} days past expiry`}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -243,5 +287,14 @@ function StatCard({ label, value }) {
         <CardTitle className="text-2xl">{value}</CardTitle>
       </CardHeader>
     </Card>
+  );
+}
+
+function MiniStat({ label, value }) {
+  return (
+    <article className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+      <p className="text-xs text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
+    </article>
   );
 }

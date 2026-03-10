@@ -14,7 +14,7 @@ function deepCloneCategories() {
     ...category,
     subcategories: category.subcategories.map((subcategory) => ({
       ...subcategory,
-      software: [...subcategory.software],
+      software: subcategory.software.map((software) => ({ ...software })),
     })),
   }));
 }
