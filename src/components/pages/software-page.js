@@ -181,15 +181,33 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Contract and Renewal</CardTitle>
+          <CardTitle>Product and License Lifecycle</CardTitle>
           <CardDescription>
-            Software-level procurement and renewal metadata
+            Canonical product, entitlement, and lifecycle attributes
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <MiniStat
+              label="Product Name (Canonical)"
+              value={software.canonicalProductName}
+            />
+            <MiniStat label="Publisher" value={software.publisher} />
+            <MiniStat label="Version" value={software.version} />
+            <MiniStat label="License Type" value={modelLabel} />
+            <MiniStat
+              label="Entitlement Type"
+              value={software.entitlementType}
+            />
+            <MiniStat label="Usage Metric" value={software.usageMetric} />
             <MiniStat label="Purchase Date" value={software.purchaseDate} />
             <MiniStat label="Expiry Date" value={software.expiryDate} />
+            <MiniStat
+              label="Maintenance Validity"
+              value={software.maintenanceValidity}
+            />
+            <MiniStat label="EOL (End of Life)" value={software.eol} />
+            <MiniStat label="EOS (End of Support)" value={software.eos} />
             <MiniStat label="Contract ID" value={software.contractId} />
             <MiniStat label="Renewal Owner" value={software.renewalOwner} />
           </div>

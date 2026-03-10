@@ -122,6 +122,9 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
                   <p className="mt-1 text-[11px] text-slate-500">
                     Expires: {software.expiryDate}
                   </p>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    EOL: {software.eol} | EOS: {software.eos}
+                  </p>
                   <Link
                     href={`/categories/${category.id}/${subcategory.id}/${softwareSlug}`}
                     className="mt-3 inline-block text-xs font-medium text-blue-700 hover:underline"
