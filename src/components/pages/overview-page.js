@@ -22,13 +22,7 @@ import {
 } from "@/lib/license-models";
 
 export function OverviewPage() {
-  const {
-    categories,
-    rows,
-    endpointHealth,
-    lastUpdatedAt,
-    simulationIntervalMs,
-  } = useSimulation();
+  const { categories, rows, endpointHealth } = useSimulation();
 
   const totalPurchased = rows.reduce((sum, row) => sum + row.purchased, 0);
   const totalActive = rows.reduce((sum, row) => sum + row.activeUsers, 0);
@@ -69,14 +63,7 @@ export function OverviewPage() {
   return (
     <AppShell
       title="Enterprise Utilization Dashboard"
-      subtitle="Live  simulation of engineering license behavior across vendors, categories, and software assets."
-      status={
-        <Badge tone="info">
-          Live simulation updates every{" "}
-          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-          {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        </Badge>
-      }
+      subtitle="Engineering license behavior across vendors, categories, and software assets."
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
@@ -106,7 +93,7 @@ export function OverviewPage() {
           <CardHeader>
             <CardTitle>Endpoint Coverage and Activity</CardTitle>
             <CardDescription>
-              Live endpoint behavior in the current simulation cycle
+              Endpoint activity across the organization
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">

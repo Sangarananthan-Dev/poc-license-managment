@@ -21,7 +21,7 @@ import {
 } from "@/lib/license-models";
 
 export function CategoryPage({ categoryId }) {
-  const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
+  const { categories } = useSimulation();
   const category = categories.find((item) => item.id === categoryId);
 
   if (!category) {
@@ -60,13 +60,6 @@ export function CategoryPage({ categoryId }) {
     <AppShell
       title={`${category.name} Category`}
       subtitle={`Owner: ${category.owner}. Drill down by subcategory and then software asset.`}
-      status={
-        <Badge tone="info">
-          Live simulation updates every{" "}
-          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-          {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        </Badge>
-      }
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="Purchased" value={formatNumber(purchased)} />

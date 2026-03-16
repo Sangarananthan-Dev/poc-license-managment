@@ -22,7 +22,7 @@ import {
 } from "@/lib/license-models";
 
 export function SubcategoryPage({ categoryId, subcategoryId }) {
-  const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
+  const { categories } = useSimulation();
 
   const category = categories.find((item) => item.id === categoryId);
   const subcategory = category?.subcategories.find(
@@ -55,13 +55,6 @@ export function SubcategoryPage({ categoryId, subcategoryId }) {
     <AppShell
       title={`${category.name} / ${modelLabel}`}
       subtitle="Type-specific analytics with software-level drill-down"
-      status={
-        <Badge tone="info">
-          Live simulation updates every{" "}
-          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-          {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        </Badge>
-      }
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {stats.map((item) => (

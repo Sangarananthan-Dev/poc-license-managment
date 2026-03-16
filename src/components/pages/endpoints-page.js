@@ -30,7 +30,6 @@ export function EndpointsPage() {
     <AppShell
       title="Endpoint Inventory"
       subtitle="Endpoint-level view with OS, assigned user, and installed software footprint"
-      status={<Badge tone="info">Dummy endpoint inventory data</Badge>}
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard

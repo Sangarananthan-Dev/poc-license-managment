@@ -18,7 +18,7 @@ export function EndpointDetailPage({ endpointId }) {
     return (
       <AppShell
         title="Endpoint Not Found"
-        subtitle="The requested endpoint id does not exist in dummy data"
+        subtitle="The requested endpoint id does not exist in inventory data"
       >
         <Card>
           <CardContent className="p-6">
@@ -58,7 +58,7 @@ export function EndpointDetailPage({ endpointId }) {
         <CardHeader>
           <CardTitle>Endpoint Status</CardTitle>
           <CardDescription>
-            Current endpoint state in dummy inventory
+            Current endpoint state in current inventory
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">

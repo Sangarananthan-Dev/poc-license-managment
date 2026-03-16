@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { AppShell } from "@/components/app-shell";
 import { useSimulation } from "@/components/simulation-provider";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -15,19 +14,12 @@ import {
 import { formatNumber, getUtilizationRate } from "@/lib/dashboard-utils";
 
 export function CategoriesPage() {
-  const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
+  const { categories } = useSimulation();
 
   return (
     <AppShell
       title="All Software Categories"
       subtitle="Detailed category navigation across Autodesk, Bentley Systems, Oracle, and Trimble Inc."
-      status={
-        <Badge tone="info">
-          Live simulation updates every{" "}
-          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-          {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        </Badge>
-      }
     >
       <section className="grid gap-4 xl:grid-cols-2">
         {categories.map((category) => {

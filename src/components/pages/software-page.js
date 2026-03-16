@@ -72,7 +72,7 @@ function getExpiryStatus(expiryDate) {
 }
 
 export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
-  const { categories, lastUpdatedAt, simulationIntervalMs } = useSimulation();
+  const { categories, lastUpdatedAt } = useSimulation();
 
   const category = categories.find((item) => item.id === categoryId);
   const subcategory = category?.subcategories.find(
@@ -160,14 +160,7 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
   return (
     <AppShell
       title={`${softwareName} Detail`}
-      subtitle={`${category.name} / ${modelLabel} software-level simulation`}
-      status={
-        <Badge tone="info">
-          Live simulation updates every{" "}
-          {Math.round(simulationIntervalMs / 1000)}s | Last updated:{" "}
-          {lastUpdatedAt.toLocaleTimeString("en-IN")}
-        </Badge>
-      }
+      subtitle={`${category.name} / ${modelLabel} software-level analytics`}
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {stats.map((item) => (
@@ -248,7 +241,7 @@ export function SoftwarePage({ categoryId, subcategoryId, softwareSlug }) {
         <CardHeader>
           <CardTitle>Endpoint Activity</CardTitle>
           <CardDescription>
-            Sample endpoint activity feed for {softwareName}
+            Endpoint activity feed for {softwareName}
           </CardDescription>
         </CardHeader>
         <CardContent>

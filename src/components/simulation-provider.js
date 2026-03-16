@@ -147,14 +147,14 @@ function getRecommendations(rows, endpointHealth) {
       ? {
           id: "capacity",
           title: `${denialRisk.categoryName} ${denialRisk.name} has highest denial pressure`,
-          impact: `${denialRisk.deniedAttempts} denied attempts in current simulation window.`,
+          impact: `${denialRisk.deniedAttempts} denied attempts in current window.`,
           severity: denialRisk.deniedAttempts > 10 ? "danger" : "info",
         }
       : null,
     {
       id: "idle",
       title: "Idle endpoint reclamation opportunity",
-      impact: `${endpointHealth.idleOver45Days} endpoints are currently idle over 45 days (simulated).`,
+      impact: `${endpointHealth.idleOver45Days} endpoints are currently idle over 45 days .`,
       severity: "info",
     },
   ].filter(Boolean);
