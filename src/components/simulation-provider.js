@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { licenseCategories } from "@/lib/license-data";
 
-const SIMULATION_INTERVAL_MS = 10000;
+const SIMULATION_INTERVAL_MS = 6000;
 const ORGANIZATION_ENDPOINTS = 12500;
 
 const SimulationContext = createContext(null);
