@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { licenseCategories } from "@/lib/license-data";
 
-const SIMULATION_INTERVAL_MS = 3000;
+const SIMULATION_INTERVAL_MS = 10000;
 const ORGANIZATION_ENDPOINTS = 12500;
 
 const SimulationContext = createContext(null);
@@ -40,6 +40,11 @@ function getMaxActive(subcategory) {
 }
 
 function getUpdatedSubcategory(subcategory) {
+  // Only Concurrent / Floating should simulate live movement.
+  if (subcategory.licenseModel !== "concurrent") {
+    return subcategory;
+  }
+
   const maxActive = getMaxActive(subcategory);
   const modelDelta = {
     concurrent: 7,
