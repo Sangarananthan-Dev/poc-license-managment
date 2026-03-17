@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
 import { useSimulation } from "@/components/simulation-provider";
@@ -20,13 +21,35 @@ import {
   getModelUtilization,
   licenseModelMeta,
 } from "@/lib/license-models";
+import { cn } from "@/lib/utils";
 
 export function OverviewPage() {
   const { categories, rows, endpointHealth } = useSimulation();
+  const [selectedLicenseModel, setSelectedLicenseModel] = useState("all");
 
   const totalPurchased = rows.reduce((sum, row) => sum + row.purchased, 0);
   const totalActive = rows.reduce((sum, row) => sum + row.activeUsers, 0);
   const totalDenied = rows.reduce((sum, row) => sum + row.deniedAttempts, 0);
+
+  const licenseTypeFilters = useMemo(() => {
+    const models = Array.from(new Set(rows.map((row) => row.licenseModel)));
+
+    return [
+      { id: "all", label: "All Types" },
+      ...models.map((model) => ({
+        id: model,
+        label: licenseModelMeta[model]?.label || model,
+      })),
+    ];
+  }, [rows]);
+
+  const filteredRows = useMemo(() => {
+    if (selectedLicenseModel === "all") {
+      return rows;
+    }
+
+    return rows.filter((row) => row.licenseModel === selectedLicenseModel);
+  }, [rows, selectedLicenseModel]);
 
   const categoryUtilization = categories.map((category) => {
     const purchased = category.subcategories.reduce(
@@ -67,14 +90,14 @@ export function OverviewPage() {
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Endpoints With ENG Software"
+          label="Engineering Softwares"
           value={formatNumber(endpointHealth.withEngSoftware)}
           subtext="Current device footprint"
         />
         <MetricCard
-          label="Purchased Entitlements"
+          label="Total Licenses Purchased"
           value={formatNumber(totalPurchased)}
-          subtext="All license types combined"
+          subtext="Across all license types"
         />
         <MetricCard
           label="Active Usage (Current)"
@@ -99,7 +122,7 @@ export function OverviewPage() {
           <CardContent className="space-y-5">
             <div>
               <div className="mb-2 flex items-center justify-between text-sm text-slate-700">
-                <span>Endpoints with ENG software</span>
+                <span>Engineering Softwares</span>
                 <span>
                   {formatNumber(endpointHealth.withEngSoftware)} /{" "}
                   {formatNumber(endpointHealth.total)}
@@ -171,11 +194,34 @@ export function OverviewPage() {
 
       <section className="grid gap-4 xl:grid-cols-5">
         <Card className="xl:col-span-3">
-          <CardHeader>
-            <CardTitle>Category Portfolio</CardTitle>
-            <CardDescription>
-              Drill into category and subcategory level details
-            </CardDescription>
+          <CardHeader className="space-y-3">
+            <div>
+              <CardTitle>Category Portfolio</CardTitle>
+              <CardDescription>
+                Drill into category and subcategory level details
+              </CardDescription>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {licenseTypeFilters.map((filter) => {
+                const isActive = selectedLicenseModel === filter.id;
+
+                return (
+                  <button
+                    key={filter.id}
+                    type="button"
+                    onClick={() => setSelectedLicenseModel(filter.id)}
+                    className={cn(
+                      "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                      isActive
+                        ? "border-blue-600 bg-blue-50 text-blue-700"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700",
+                    )}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -191,7 +237,7 @@ export function OverviewPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => {
+                  {filteredRows.map((row) => {
                     const utilization = getModelUtilization(row);
                     const health = getModelHealth(row);
                     const modelLabel =
@@ -238,6 +284,13 @@ export function OverviewPage() {
                       </tr>
                     );
                   })}
+                  {filteredRows.length === 0
+                    ? <tr>
+                        <td className="p-3 text-slate-500" colSpan={6}>
+                          No records found for the selected license type.
+                        </td>
+                      </tr>
+                    : null}
                 </tbody>
               </table>
             </div>
